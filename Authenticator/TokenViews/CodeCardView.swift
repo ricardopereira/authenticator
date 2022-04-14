@@ -6,6 +6,7 @@ struct CodeCardView: View {
         @Binding var totp: String
         @Binding var timeRemaining: Int
 
+        @State private var copiedTotp: String = ""
         @State private var isBannerPresented: Bool = false
 
         var body: some View {
@@ -17,9 +18,12 @@ struct CodeCardView: View {
                                 Menu {
                                         Button {
                                                 UIPasteboard.general.string = totp
-                                                guard !isBannerPresented else { return }
+                                                copiedTotp = totp
+                                                guard !isBannerPresented else {
+                                                    return
+                                                }
                                                 isBannerPresented = true
-                                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                                         isBannerPresented = false
                                                 }
                                         } label: {
@@ -37,7 +41,8 @@ struct CodeCardView: View {
                         }
                         VStack(spacing: 4) {
                                 HStack {
-                                        Text(verbatim: formattedTotp).font(.largeTitle)
+                                        Text(verbatim: "XXX XXX") //formattedTotp
+                                            .font(.largeTitle)
                                         Spacer()
                                 }
                                 HStack {
@@ -56,14 +61,17 @@ struct CodeCardView: View {
                         .contentShape(Rectangle())
                         .onTapGesture {
                                 UIPasteboard.general.string = totp
-                                guard !isBannerPresented else { return }
+                                copiedTotp = totp
+                                guard !isBannerPresented else {
+                                    return
+                                }
                                 isBannerPresented = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                                         isBannerPresented = false
                                 }
                         }
                 }
-                .copiedBanner(isPresented: $isBannerPresented)
+                .copiedBanner(code: copiedTotp, isPresented: $isBannerPresented)
                 .animation(.default, value: isBannerPresented)
         }
 
